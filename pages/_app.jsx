@@ -5,7 +5,7 @@ import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '@/theme/theme';
-import { AuthProvider } from '@/contexts/auth.context';
+// import { AuthProvider } from '@/contexts/auth.context';
 
 
 const MyApp = (props) => {
@@ -13,15 +13,15 @@ const MyApp = (props) => {
 
   return (
     <AppCacheProvider {...props}>
-      <AuthProvider>
-        <Head>
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-        </Head>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Component {...pageProps} />
-        </ThemeProvider>
-      </AuthProvider>
+      {/* <AuthProvider> */}
+      <Head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </Head>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Component {...pageProps} />
+      </ThemeProvider>
+      {/* </AuthProvider> */}
     </AppCacheProvider>
   );
 }

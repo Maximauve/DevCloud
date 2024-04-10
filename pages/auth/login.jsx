@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/contexts/auth.context';
 
 const Login = () => {
 
-  const { user, login } = useAuth();
+  // const { user, login } = useAuth();
+  let user = localStorage.getItem('userData')
+  user = user ? JSON.parse(user) : null
+
+
   const router = useRouter();
 
   useEffect(() => {
@@ -35,7 +38,8 @@ const Login = () => {
 
         const data = await response.json();
 
-        login(data.username, data.token);
+        // login(data.username, data.token);
+        localStorage.setItem('userData', JSON.stringify({ username: data.username, token: data.token }))
 
         router.push('/');
 

@@ -43,7 +43,9 @@ const handler = async (req, res) => {
         }
         const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-        res.status(200).json({ status: 200, message: "Successfully logged in", username: userInDB.firstName, token });
+        const data = { username: userInDB.firstName, token }
+
+        res.status(200).json({ status: 200, message: "Successfully logged in", ...data });
       } catch (error) {
         console.error(error);
         res.status(403).json({ status: 403, message: error.message });
