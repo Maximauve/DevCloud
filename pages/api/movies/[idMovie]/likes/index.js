@@ -1,7 +1,4 @@
-import Collections from "@/constants/Collections";
-import { getOne, insertOne, updateOne } from "@/services/db.service";
-
-
+import clientPromise from "@/lib/mongodb";
 /**
  * @swagger
  * /api/movies/{idMovie}/likes:
@@ -34,35 +31,38 @@ import { getOne, insertOne, updateOne } from "@/services/db.service";
  *       404:
  *         description: Not found Response
  */
-const handler = async (req, res) => {
+export default async function handler(req, res) {
 
   const idMovie = parseInt(req.query.idMovie, 10);
+
+  const client = await clientPromise;
+  const db = client.db("ynov-cloud");
 
   switch (req.method) {
 
     case "PATCH":
 
-      const like = await getOne(Collections.LIKES, { idTMDB: idMovie });
+      const like = await db.collection("likes").findOne({ idTMDB: idMovie });
       let resMongo, data;
 
       if (like) {
-        resMongo = await updateOne(Collections.LIKES,
+        resMongo = await db.collection("likes").updateOne(
           { idTMDB: idMovie },
           { $inc: { likeCounter: 1 } }
         )
         data = {
-          action: 'likeCounter incremented',
+          action: 'likeCounter updated',
           idMovie: idMovie,
           matchedCount: resMongo.matchedCount,
           modifiedCount: resMongo.modifiedCount
         }
         res.status(201).json({ status: 201, data: data });
       } else {
-        resMongo = await insertOne(Collections.LIKES,
-          { idTMDB: idMovie, likeCounter: 1 }
+        resMongo = await db.collection("likes").insertOne(
+          { idTMDB: idMovie, likeCounter: 0 }
         )
         data = {
-          action: 'likeCounter created',
+          action: 'likeCounter updated',
           idMovie: idMovie,
           insertedId: resMongo.insertedId
         }
@@ -73,7 +73,7 @@ const handler = async (req, res) => {
 
     case "GET":
 
-      const likes = await getOne(Collections.LIKES, { idTMDB: idMovie });
+      const likes = await db.collection("likes").findOne({ idTMDB: idMovie });
       res.json({ status: 200, data: { likes: likes } });
       break;
 
@@ -81,5 +81,3 @@ const handler = async (req, res) => {
       res.status(405).json({ status: 405, error: "Method Not Allowed" });
   }
 }
-
-export default handler;

@@ -1,31 +1,38 @@
-// import fetch from 'node-fetch';
-// import { ConfigService } from '@/services/config.service';
-// import { NextApiRequest, NextApiResponse } from 'next';
+import fetch from "node-fetch";
+import { ConfigService } from "@/services/config.service"
 
-// /**
-//  * @swagger
-//  * /api/discover:
-//  *   get:
-//  *     description: Endpoint which returns discover data
-//  *     responses:
-//  *       200:
-//  *         description: Success Response
-//  *       404:
-//  *         description: Not found Response
-//  */
-// const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-// 	const options = {
-// 		method: 'GET',
-// 		headers: {
-// 			'accept': 'application/json',
-// 			'Authorization': ConfigService.themoviedb.keys.API_AUTH,
-// 		},
-// 	};
-// 	const response = await fetch(ConfigService.themoviedb.urls.discoverMovies, options)
-// 		.then((res) => res.json())
-// 		.catch((err) => console.error('error:' + err));
+/**
+ * @swagger
+ * /api/discover:
+ *   get:
+ *     description: Endpoint which returns discover data
+ *     responses:
+ *       200:
+ *         description: Success Response
+ *       404:
+ *         description: Not found Response
+ */
+export default async function handler(req, res) {
+	try {
+		const url = ConfigService.themoviedb.urls.discover;
+		const options = {
+			method: 'GET',
+			headers: {
+				accept: 'application/json',
+				Authorization: 'Bearer ' + ConfigService.themoviedb.keys.API_TOKEN
+			}
+		};
 
-// 	res.status(200).json(response);
-// }
+		const apiResponse = await fetch(url, options)
+			.then(r => r.json());
 
-// export default handler;
+		// Vérifier si l'API a renvoyé une réponse valide
+		if (apiResponse && apiResponse.results) {
+			res.status(200).json({ status: 200, data: apiResponse.results });
+		} else {
+			throw new Error('Invalid API response');
+		}
+	} catch (error) {
+		res.status(500).json({ status: 500, error: 'Internal Server Error' });
+	}
+}

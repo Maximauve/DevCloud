@@ -1,14 +1,22 @@
-'use client';
+import * as React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/auth.context';
 
-const Home = () => {
+export default function Index() {
 
-  let user = localStorage.getItem('userData')
-  user = user ? JSON.parse(user) : null
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/ui/sign-in');
+    }
+  }, [user, router]);
 
   return (
     <Container maxWidth="sm">
@@ -16,18 +24,10 @@ const Home = () => {
         <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
           Material UI - Next.js example
         </Typography>
-        {user ? (
-          <p>
-            Welcome, {user.username}! You are now signed in.
-          </p>
-        ) : (
-          <Link href="/auth/login" color="secondary">
-            Go to the Sign-In page
-          </Link>
-        )}
+        <Link href="/ui/sign-in" color="secondary">
+          Go to the Sign-In page
+        </Link>
       </Box>
-    </Container >
+    </Container>
   );
 }
-
-export default Home;
